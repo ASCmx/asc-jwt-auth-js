@@ -1,0 +1,23 @@
+{
+  "name": "asc-jwt-auth",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://pierbover@github.com/ASCmx/asc-jwt-auth-js.git"
+  },
+  "author": "Pier Bover",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ASCmx/asc-jwt-auth-js/issues"
+  },
+  "homepage": "https://github.com/ASCmx/asc-jwt-auth-js#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "jwt-decode": "^2.2.0"
+  }
+}
