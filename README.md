@@ -1,7 +1,7 @@
 # asc-jwt-auth-js
 
 Minimal example:
-```
+```js
 import auth from 'asc-jwt-auth-js';
 
 auth.init({
@@ -13,10 +13,12 @@ await auth.authenticate({
 	username: 'pepito',
 	password: '12345'
 });
+
+await auth.refreshToken();
 ```
 
 Full example:
-```
+```js
 import auth from 'asc-jwt-auth-js';
 
 // Init
