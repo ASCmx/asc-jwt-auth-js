@@ -1,5 +1,14 @@
 # asc-jwt-auth-js
 
+To install latest:
+```
+npm i https://github.com/ASCmx/asc-jwt-auth-js.git
+```
+To install a particular version:
+```
+npm i https://github.com/ASCmx/asc-jwt-auth-js.git#0.1.1
+```
+
 Minimal example:
 ```js
 import auth from 'asc-jwt-auth-js';
