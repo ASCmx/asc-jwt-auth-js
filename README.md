@@ -42,7 +42,7 @@ auth.init({
 	},
 	cleanAxiosHeaders () {
 		axios.defaults.headers.common['Authorization'] = null;
-	},
+	}
 });
 
 // Authenticates with server
