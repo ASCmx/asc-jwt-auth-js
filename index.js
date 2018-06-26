@@ -1,37 +1,58 @@
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 
-let localStorageKey, authenticationURL, refreshURL, getTokenFromResponse, setAxiosHeaders, cleanAxiosHeaders, decodedToken, setRefreshCredentials;
+let localStorageKey, authenticationURL, refreshTokenURL, getTokenFromResponse, setAxiosHeaders, cleanAxiosHeaders, decodedToken, setRefreshCredentials;
 
 function init (config) {
 	if (typeof config.localStorageKey !== 'string') throw 'localStorageKey is required';
 	if (typeof config.authenticationURL !== 'string') throw 'authenticationURL is required';
 
+	localStorageKey = config.localStorageKey;
+	authenticationURL = config.authenticationURL;
+	refreshTokenURL = config.refreshTokenURL;
+
 	// Get the token from the Axios response
-	getTokenFromResponse = config.getTokenFromResponse || (reponse) => {
-		return response.data.jwt
-	};
+	if (config.getTokenFromResponse !== undefined) {
+		getTokenFromResponse = config.getTokenFromResponse;
+	} else {
+		getTokenFromResponse = function (response) {
+			return response.data.jwt;
+		};
+	}
 
 	// Set Axios headers for all API requests
-	setAxiosHeaders = config.setAxiosHeaders || (token) => {
-		axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+	if (config.setAxiosHeaders !== undefined) {
+		setAxiosHeaders = config.setAxiosHeaders;
+	} else {
+		setAxiosHeaders = function (token) {
+			axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+		};
 	}
 
 	// Clean Axios headers
-	cleanAxiosHeaders = config.cleanAxiosHeaders || () => {
-		axios.defaults.headers.common['Authorization'] = null;
+	if (config.cleanAxiosHeaders !== undefined) {
+		cleanAxiosHeaders = config.cleanAxiosHeaders;
+	} else {
+		cleanAxiosHeaders = function () {
+			axios.defaults.headers.common['Authorization'] = null;
+		};
 	}
 
 	// Returns credentials object for token refresh
-	setRefreshCredentials = config.setRefreshCredentials || (token) => {
-		return {
-			jwt: token
+	if (config.setRefreshCredentials !== undefined) {
+		setRefreshCredentials = config.setRefreshCredentials;
+	} else {
+		setRefreshCredentials = function (token) {
+			return {
+				jwt: token
+			};
 		};
-	};
+	}
 }
 
 async function authenticate (credentials) {
 	const response = await axios.post(authenticationURL, credentials);
+	console.log(response);
 	const token = getTokenFromResponse(response);
 	decodedToken = jwtDecode(token);
 	onAuthentication(token);
@@ -40,7 +61,8 @@ async function authenticate (credentials) {
 
 async function refreshToken () {
 	const previousToken = getJWT(false);
-	const response = await axios.post(refreshURL || authenticationURL, setRefreshCredentials(previousToken));
+	if (typeof previousToken !== 'string') throw 'No token in localStorage ' + localStorageKey;
+	const response = await axios.post(refreshTokenURL || authenticationURL, setRefreshCredentials(previousToken));
 	const newToken = getTokenFromResponse(response);
 	decodedToken = jwtDecode(newToken);
 	onAuthentication(newToken);
@@ -70,23 +92,3 @@ export default {
 	logout,
 	getJWT
 };
-
-
-async authenticate (username, password) {
-	try {
-		return await axios.post('users/authenticate', {
-			username,
-			password
-		});
-	} catch (error) {
-		if (error.response) {
-			throw 'Usuario o contraseña incorrectos';
-		} else {
-			throw error;
-		}
-	}
-
-},
-async reauthenticate (token) {
-	return await axios.post('users/reauthenticate', {jwt: token});
-}
